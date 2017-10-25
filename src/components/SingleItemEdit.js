@@ -5,18 +5,21 @@ import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 
+const defaultContent = {
+    name: '',
+    description: '',
+    image: '',
+    ingredients: [
+        'Ingredient',
+    ]
+}
+
 class SingleItemEdit extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            newSingleItemData: {
-                name: '',
-                description: '',
-                image: '',
-                ingredients: [
-                    'Ingredient',
-                ]
-            }
+            newSingleItemData: null,
+            ingrNeededErr: false
         }
     }
 
@@ -27,43 +30,51 @@ class SingleItemEdit extends Component {
 
         if (singleItemData !== null) {
             this.setState({
-                newSingleItemData: {...singleItemData.data}
+                newSingleItemData: {...singleItemData}
+            });
+        }
+        else {
+            this.setState({
+                newSingleItemData: {...defaultContent}
             });
         }
     }
     
 
     handleEditIngredientField = (e, index) => {
-        let newArr = this.state.newSingleItemData.ingredients.slice(0);
+        let newArr = [...this.state.newSingleItemData.ingredients];
         newArr[index] = e.target.value;
+        console.log(this.state.newSingleItemData.ingredients);
+        console.log(newArr);
+
         this.setState({
             newSingleItemData: {
                 ...this.state.newSingleItemData,
-                ingredients: [...newArr]
-            }
+                ingredients: newArr
+            },
         })
     }
 
     handleRemoveIngrBtn = (index) => {
-        console.log(index)
-        let newArr = this.state.newSingleItemData.ingredients.slice(0);
-        // console.log(newArr)
+        const ingrsArray = this.state.newSingleItemData.ingredients;
+    
+        let newArr = ingrsArray.slice(0);
         newArr.splice(index, 1);
-        // console.log(newArr)
         this.setState({
             newSingleItemData: {
                 ...this.state.newSingleItemData,
                 ingredients: [...newArr]
             }
         });
-        
+    
     }
     
     
     render() {
         // const {singleItemData} = this.props;
-        const {newSingleItemData} = this.state;
-        console.log(newSingleItemData.ingredients)
+        const {newSingleItemData, ingrNeededErr} = this.state;
+        const onlyOneIngredientLeft = newSingleItemData.ingredients.length < 2 ;
+        console.log(ingrNeededErr);
 
         return (
             <div>
@@ -91,7 +102,7 @@ class SingleItemEdit extends Component {
                     <div className="detailV__recipe__info">
                         <TextField
                             hintText="Name of your recipe"
-                            floatingLabelText="Name"
+                            floatingLabelText="Recipe's Name"
                             onChange={(e) => {
                                 this.setState({
                                     newSingleItemData: {
@@ -130,30 +141,33 @@ class SingleItemEdit extends Component {
                         
                         {
                             newSingleItemData.ingredients.map( (ingredient, index) =>
-                                <div className="form-item" key={index}>
+                                <div className="form-item" key={ingredient + " " + index}>
                                     <TextField
                                         className="text-field"
                                         hintText="Ingrdient"
                                         defaultValue={ingredient}
                                         floatingLabelFixed={true}
                                         type="text"
+                                        errorText= {ingrNeededErr ? "At least one ingrdient needed" : ""}
                                         onChange={ (e) => this.handleEditIngredientField(e, index) }
                                         />
-                                    <FlatButton 
-                                        label="Remove" 
-                                        labelStyle={{
-                                            fontSize: "10px",
-                                            paddingLeft: "2px",
-                                            paddingRight: "2px",
-                                        }}
-                                        secondary={true}
-                                        style={{
-                                            minWidth: "50px",
-                                            height: "26px",
-                                            lineHeight: "26px"
-                                        }}
-                                        onClick={ () => this.handleRemoveIngrBtn(index) }
-                                        />
+                                    { !onlyOneIngredientLeft &&
+                                        <FlatButton 
+                                            label="Remove" 
+                                            labelStyle={{
+                                                fontSize: "10px",
+                                                paddingLeft: "2px",
+                                                paddingRight: "2px",
+                                            }}
+                                            secondary={true}
+                                            style={{
+                                                minWidth: "50px",
+                                                height: "26px",
+                                                lineHeight: "26px"
+                                            }}
+                                            onClick={ () => this.handleRemoveIngrBtn(index) }
+                                            />
+                                    }
                                     
                                 </div>
                             )

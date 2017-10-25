@@ -13,15 +13,15 @@ const SingleItemView = (props) => {
         <div>
             <Paper className="SingleItemView" zDepth={2}>
                 <div className="detailV__recipe__image">
-                    <img src={singleItemData.data.image} alt={singleItemData.data.name} />
+                    <img src={singleItemData.image} alt={singleItemData.name} />
                 </div>
                 <div className="detailV__recipe__info">
-                    <h1 className="detailV__recipe__name">{singleItemData.data.name}</h1>
-                    <h2 className="detailV__recipe__desc">{singleItemData.data.description}</h2>
+                    <h1 className="detailV__recipe__name">{singleItemData.name}</h1>
+                    <h2 className="detailV__recipe__desc">{singleItemData.description}</h2>
                     <ul className="detailV__recipe__ingrs">
 
                         {
-                            singleItemData.data.ingredients.map( (ingredient, index) => <li key={index}>{ingredient}</li> )
+                            singleItemData.ingredients.map( (ingredient, index) => <li key={index}>{ingredient}</li> )
                         }
 
                     </ul>

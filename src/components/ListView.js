@@ -12,9 +12,9 @@ class ListView extends Component {
 
     render() {
         const {data, handleViewBtn, handleEditOrCreateBtn} = this.props;
-        const recipes = data.map( (recipe, index) => {
+        const recipes = data.map( (recipe) => {
             return (
-                <div key={index} className="grid__item">
+                <div key={recipe.id} className="grid__item">
                     <Paper 
                         style= {{
                             backgroundImage: "url(" + recipe.image + ")",
@@ -30,7 +30,7 @@ class ListView extends Component {
                             {<h3 className="listV__recipe-info__desc">{recipe.description}</h3>}
                             <div className="listV__recipe__ctrls">
                                 <FlatButton 
-                                    onClick={() => handleViewBtn(recipe, index)} 
+                                    onClick={() => handleViewBtn(recipe)} 
                                     className="listV__recipe__ctrls__edit" 
                                     label="VIEW"
                                     labelStyle={{fontSize: "0.8em"}}

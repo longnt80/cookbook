@@ -22,13 +22,10 @@ class componentName extends Component {
         });
     }
 
-    handleViewBtn = (recipe, index) => {
+    handleViewBtn = (recipe) => {
         this.setState({
             view: "detail",
-            singleItemData: {
-                data: recipe,
-                index: index
-            },
+            singleItemData: { ...recipe },
             edittingItem: false
         });
     }
