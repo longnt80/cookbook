@@ -40,19 +40,30 @@ class SingleItemEdit extends Component {
         }
     }
     
-
     handleEditIngredientField = (e, index) => {
         let newArr = [...this.state.newSingleItemData.ingredients];
         newArr[index] = e.target.value;
-        console.log(this.state.newSingleItemData.ingredients);
-        console.log(newArr);
 
-        this.setState({
-            newSingleItemData: {
-                ...this.state.newSingleItemData,
-                ingredients: newArr
-            },
-        })
+        if ( this.state.newSingleItemData.ingredients.length === 1 && e.target.value === "" ) {
+            this.setState({
+                newSingleItemData: {
+                    ...this.state.newSingleItemData,
+                    ingredients: newArr
+                },
+                ingrNeededErr: true
+            })
+        }
+        else {
+            this.setState({
+                newSingleItemData: {
+                    ...this.state.newSingleItemData,
+                    ingredients: newArr
+                },
+                ingrNeededErr: false
+            })
+        }
+        
+
     }
 
     handleRemoveIngrBtn = (index) => {
@@ -71,10 +82,9 @@ class SingleItemEdit extends Component {
     
     
     render() {
-        // const {singleItemData} = this.props;
         const {newSingleItemData, ingrNeededErr} = this.state;
         const onlyOneIngredientLeft = newSingleItemData.ingredients.length < 2 ;
-        console.log(ingrNeededErr);
+        console.log("Re-rendered!!!");
 
         return (
             <div>
@@ -149,7 +159,7 @@ class SingleItemEdit extends Component {
                                         floatingLabelFixed={true}
                                         type="text"
                                         errorText= {ingrNeededErr ? "At least one ingrdient needed" : ""}
-                                        onChange={ (e) => this.handleEditIngredientField(e, index) }
+                                        onBlur={ (e) => this.handleEditIngredientField(e, index) }
                                         />
                                     { !onlyOneIngredientLeft &&
                                         <FlatButton 
