@@ -1,0 +1,108 @@
+.grid {
+    display:flex;
+    flex-direction: column;
+}
+
+.grid__item {
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.grid__content {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    padding-top: 200px;
+}
+.grid__content--add-btn {
+    display: none;
+}
+
+.grid__content:hover .listV__recipe-info {
+    background-color: rgba(255,255,255,1);
+}
+
+.listV__recipe-info {
+    flex-grow: 1;
+    background-color: rgba(255,255,255,.88);
+    transition: background-color .2s ease-in;
+    text-align: right;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.listV__recipe-info__name {
+    font-size: 1em;
+    font-weight: 500;
+    margin: 10px 10px 5px;
+}
+
+.listV__recipe-info__desc {
+    font-size: 0.8em;
+    font-weight: 400;
+    margin: 0 10px 10px;
+}
+
+.listV__recipe__ctrls {
+    display: flex;
+}
+
+.listV__recipe__ctrls__edit,
+.listV__recipe__ctrls__delete {
+    flex-basis: 50%;
+}
+
+.listV__recipe__ctrls__edit span,
+.listV__recipe__ctrls__delete span {
+    /* font-size: 0.8rem !important; */
+}
+
+@media screen and (min-width: 387px) {
+    .grid {
+        display:flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .grid__item {
+        flex-basis: 50%;
+        margin-bottom: 10px;
+        padding: 0 10px;
+    }
+    .grid__item:nth-child(1n) { padding-left: 0; }
+    .grid__item:nth-child(2n) { padding-right: 0; }
+
+    .grid__content--add-btn {
+        padding-top: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-only {
+        display:none !important;
+    }
+}
+
+
+@media screen and (min-width: 550px) {
+    .grid__item {
+        flex-basis: 33%;
+    }
+    .grid__item:nth-child(2n) { padding-right: 10px; }
+    .grid__item:nth-child(3n) { padding-right: 0; }
+}
+
+@media screen and (min-width: 759px) {
+    .grid__item {
+        flex-basis: 25%;
+    }
+    .grid__item:nth-child(2n) { padding-right: 10px; }
+    .grid__item:nth-child(3n) { padding-right: 10px; }
+    .grid__item:nth-child(4n) { padding-right: 0; }
+}

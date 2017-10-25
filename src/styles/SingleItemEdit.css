@@ -1,0 +1,90 @@
+.SingleItemEdit {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.SingleItemEdit .image-edit-field {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.SingleItemEdit .detailV__recipe__image img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    height: 200px;
+}
+
+
+.SingleItemEdit .detailV__recipe__info {
+    position: relative;
+    flex-grow: 1;
+    padding: 20px;
+    padding-bottom: 80px;
+}
+
+.SingleItemEdit .detailV__recipe__name {
+    font-size: 1.8rem;
+    font-weight: 500;
+}
+
+.SingleItemEdit .detailV__recipe__desc {
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin-top: -20px;
+}
+
+.SingleItemEdit .detailV__recipe__ingrs-heading {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.SingleItemEdit .detailV__recipe__ctrls {
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+}
+
+.form-item {
+    display: flex;
+    align-items: center;
+}
+
+.form-item .text-field {
+    flex-grow: 1;
+}
+
+@media screen and (min-width: 500px) {
+    .SingleItemEdit {
+        margin-top: 20px;
+        flex-direction: row;
+    }
+    
+    .SingleItemEdit .image-edit-field {
+        flex-basis: 30%;
+    }
+    
+    .SingleItemEdit .detailV__recipe__image img{
+        object-fit: cover;
+        height: 100%;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .SingleItemEdit {
+        margin-top: 50px;
+        flex-direction: row;
+    }
+
+    .SingleItemEdit .image-edit-field {
+        flex-basis: 40%;
+    }
+
+    .SingleItemEdit .detailV__recipe__image img{
+        object-fit: cover;
+        height: 100%;
+    }
+}
