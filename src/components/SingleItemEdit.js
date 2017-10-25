@@ -26,11 +26,15 @@ class SingleItemEdit extends Component {
     
     componentWillMount() {
         const {singleItemData} = this.props;
-        const {newSingleItemData} = this.state;
-
         if (singleItemData !== null) {
+            console.log(singleItemData.ingredients)
+            const ingredientListWithIds = singleItemData.ingredients.map( (v, i) => ({ id: i,name: v}) );
+
             this.setState({
-                newSingleItemData: {...singleItemData}
+                newSingleItemData: {
+                    ...singleItemData,
+                    ingredients: ingredientListWithIds
+                }
             });
         }
         else {
@@ -42,13 +46,13 @@ class SingleItemEdit extends Component {
     
     handleEditIngredientField = (e, index) => {
         let newArr = [...this.state.newSingleItemData.ingredients];
-        newArr[index] = e.target.value;
-
+        newArr[index].name = e.target.value;
+        
         if ( this.state.newSingleItemData.ingredients.length === 1 && e.target.value === "" ) {
             this.setState({
                 newSingleItemData: {
                     ...this.state.newSingleItemData,
-                    ingredients: newArr
+                    ingredients: [...newArr]
                 },
                 ingrNeededErr: true
             })
@@ -57,13 +61,20 @@ class SingleItemEdit extends Component {
             this.setState({
                 newSingleItemData: {
                     ...this.state.newSingleItemData,
-                    ingredients: newArr
+                    ingredients: [...newArr]
                 },
                 ingrNeededErr: false
             })
         }
-        
+    }
 
+    handleTextInput = (e) => {
+        this.setState({
+            newSingleItemData: {
+                ...this.state.newSingleItemData,
+                [e.target.name]: e.target.value
+            }
+        })
     }
 
     handleRemoveIngrBtn = (index) => {
@@ -77,7 +88,6 @@ class SingleItemEdit extends Component {
                 ingredients: [...newArr]
             }
         });
-    
     }
     
     
@@ -92,18 +102,12 @@ class SingleItemEdit extends Component {
                 
                     <div className="image-edit-field">
                         <TextField
-                            hintText="Link to your image"
+                            hintText="http://website.com/image.jpg"
                             floatingLabelText="Image URL"
                             defaultValue={newSingleItemData.image}
                             floatingLabelFixed={true}
-                            onChange={(e) => {
-                                this.setState({
-                                    newSingleItemData: {
-                                        ...newSingleItemData,
-                                        image: e.target.value
-                                    }
-                                })
-                            }}
+                            name="image"
+                            onChange={(e) => this.handleTextInput(e)}
                             />
                         <div className="detailV__recipe__image">
                             <img src={newSingleItemData.image} alt={newSingleItemData.name} />
@@ -113,14 +117,8 @@ class SingleItemEdit extends Component {
                         <TextField
                             hintText="Name of your recipe"
                             floatingLabelText="Recipe's Name"
-                            onChange={(e) => {
-                                this.setState({
-                                    newSingleItemData: {
-                                        ...newSingleItemData,
-                                        name: e.target.value
-                                    }
-                                })
-                            }}
+                            name="name"
+                            onChange={(e) => this.handleTextInput(e)}
                             defaultValue={newSingleItemData.name}
                             floatingLabelFixed={true}
                             type="text"
@@ -132,14 +130,8 @@ class SingleItemEdit extends Component {
                             floatingLabelText="Description (optional)"
                             defaultValue={newSingleItemData.description}
                             floatingLabelFixed={true}
-                            onChange={(e) => {
-                                this.setState({
-                                    newSingleItemData: {
-                                        ...newSingleItemData,
-                                        description: e.target.value
-                                    }
-                                })
-                            }}
+                            name="description"
+                            onChange={(e) => this.handleTextInput(e)}
                             fullWidth={true}
                             multiLine={true}
                             rows={1}
@@ -151,16 +143,17 @@ class SingleItemEdit extends Component {
                         
                         {
                             newSingleItemData.ingredients.map( (ingredient, index) =>
-                                <div className="form-item" key={ingredient + " " + index}>
+                                <div className="form-item" key={ingredient.id}>
                                     <TextField
                                         className="text-field"
                                         hintText="Ingrdient"
-                                        defaultValue={ingredient}
+                                        defaultValue={ingredient.name}
                                         floatingLabelFixed={true}
                                         type="text"
                                         errorText= {ingrNeededErr ? "At least one ingrdient needed" : ""}
-                                        onBlur={ (e) => this.handleEditIngredientField(e, index) }
+                                        onChange={ (e) => this.handleEditIngredientField(e, index) }
                                         />
+
                                     { !onlyOneIngredientLeft &&
                                         <FlatButton 
                                             label="Remove" 
