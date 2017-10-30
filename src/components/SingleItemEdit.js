@@ -10,7 +10,10 @@ const defaultContent = {
     description: '',
     image: '',
     ingredients: [
-        'Ingredient',
+        {
+            id: 0,
+            name: ''
+        }
     ]
 }
 
@@ -18,200 +21,270 @@ class SingleItemEdit extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            newSingleItemData: null,
-            ingrNeededErr: false
+            newSingleData: null,
+            noIngredientError: true
         }
     }
 
+    removeEmptyIngrFields = (ingr) => {
+        return ingr.name !== '';
+    }
     
     componentWillMount() {
         const {singleItemData} = this.props;
-        if (singleItemData !== null) {
-            console.log(singleItemData.ingredients)
-            const ingredientListWithIds = singleItemData.ingredients.map( (v, i) => ({ id: i,name: v}) );
-
-            this.setState({
-                newSingleItemData: {
-                    ...singleItemData,
-                    ingredients: ingredientListWithIds
-                }
-            });
-        }
-        else {
-            this.setState({
-                newSingleItemData: {...defaultContent}
-            });
-        }
-    }
-    
-    handleEditIngredientField = (e, index) => {
-        let newArr = [...this.state.newSingleItemData.ingredients];
-        newArr[index].name = e.target.value;
         
-        if ( this.state.newSingleItemData.ingredients.length === 1 && e.target.value === "" ) {
+        if (singleItemData !== null) {
+            const allIngrFieldsAreEmpty = singleItemData.ingredients.filter( this.removeEmptyIngrFields ).length === 0 ? true : false
+            
             this.setState({
-                newSingleItemData: {
-                    ...this.state.newSingleItemData,
-                    ingredients: [...newArr]
+                newSingleData: {
+                    ...singleItemData,
+                    ingredients: [...singleItemData.ingredients],
                 },
-                ingrNeededErr: true
+                noIngredientError: allIngrFieldsAreEmpty
+            });
+        }
+        else {
+            this.setState({
+                newSingleData: {
+                    ...defaultContent,
+                    ingredients: defaultContent.ingredients.map(obj => {
+                        return {...obj}
+                    })
+                } 
+            });
+        }
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        if (this.state.newSingleData.ingredients !== nextState.newSingleData.ingredients) {
+            const allIngrFieldsAreEmpty = nextState.newSingleData.ingredients.filter( this.removeEmptyIngrFields ).length === 0 ? true : false;
+            this.setState({
+                noIngredientError: allIngrFieldsAreEmpty
+            });
+        }
+    }
+    
+    
+
+    handleInputChange = (e, index) => {
+        const target = e.target;
+
+        if ( target.name === "ingredient" ) {
+            this.setState({
+                newSingleData: {
+                    ...this.state.newSingleData,
+                    ingredients: this.state.newSingleData.ingredients.map( (obj, i) => {
+                                            return index === i ? { ...obj, name: target.value } : obj
+                                        })
+                }
             })
         }
         else {
             this.setState({
-                newSingleItemData: {
-                    ...this.state.newSingleItemData,
-                    ingredients: [...newArr]
-                },
-                ingrNeededErr: false
+                newSingleData: {
+                    ...this.state.newSingleData,
+                    [target.name]: target.value
+                }
             })
         }
     }
 
-    handleTextInput = (e) => {
+    handleRemove = (index) => {
+        const newArr = this.state.newSingleData.ingredients.slice(0);
+        newArr.splice(index, 1);
+        const allIngrFieldsAreEmpty = newArr.filter( this.removeEmptyIngrFields ).length === 0 ? true : false;
+        
         this.setState({
-            newSingleItemData: {
-                ...this.state.newSingleItemData,
-                [e.target.name]: e.target.value
-            }
-        })
+            newSingleData: {
+                ...this.state.newSingleData,
+                ingredients: [...newArr]
+            },
+            noIngredientError: allIngrFieldsAreEmpty
+        });
     }
 
-    handleRemoveIngrBtn = (index) => {
-        const ingrsArray = this.state.newSingleItemData.ingredients;
-    
-        let newArr = ingrsArray.slice(0);
-        newArr.splice(index, 1);
+    handleAdd = () => {
+        const newArr = [...this.state.newSingleData.ingredients];
+        
+        const generateNewId = (arr) => {
+            const idsArr = arr.map( item => item.id );
+            const sortedArr = idsArr.sort((a,b) => a-b)
+            if ( sortedArr[0] !== 0 ) {
+                return 0;
+            }
+            else {
+                for (let i = 0; i < sortedArr.length; i++) {
+                    if (sortedArr[i+1] - sortedArr[i] > 1) {
+                        return sortedArr[i]+1;
+                    }
+                }
+                return sortedArr[sortedArr.length-1]+1;
+            }
+        }
+        const newId = generateNewId(newArr);
+        newArr.push({ id: newId, name: '' })
+
         this.setState({
-            newSingleItemData: {
-                ...this.state.newSingleItemData,
+            newSingleData: {
+                ...this.state.newSingleData,
                 ingredients: [...newArr]
             }
         });
     }
+
+    handleCancel = () => {
+        const {singleItemData,handleViewOneBtn, handleViewAllBtn} = this.props;
+
+        singleItemData === null ? 
+        handleViewAllBtn() :
+        handleViewOneBtn(singleItemData) 
+    }
+
     
     
     render() {
-        const {newSingleItemData, ingrNeededErr} = this.state;
-        const onlyOneIngredientLeft = newSingleItemData.ingredients.length < 2 ;
-        console.log("Re-rendered!!!");
+        const {handleSubmit} = this.props;
+        const {newSingleData, noIngredientError} = this.state;
+        const onlyOneIngredientLeft = newSingleData.ingredients.length === 1;
+        const nameIsEmpty = newSingleData.name.length < 1;
+        const noIngredient = noIngredientError;
+        const noError = !noIngredient && !nameIsEmpty
+
+        const ingredientsList = newSingleData.ingredients.map( (ingredient, index) =>
+            <div className="form-item" key={ingredient.id}>
+                <TextField
+                    className="text-field"
+                    hintText="Ingrdient"
+                    value={ingredient.name}
+                    name="ingredient"
+                    floatingLabelFixed={true}
+                    type="text"
+                    errorText= {noIngredient ? "At least one ingredient is needed" : ""}
+                    onChange={ (e) => this.handleInputChange(e, index) }
+                    />
+
+                { !onlyOneIngredientLeft &&
+                    <FlatButton 
+                        label="Remove" 
+                        labelStyle={{
+                            fontSize: "10px",
+                            paddingLeft: "2px",
+                            paddingRight: "2px",
+                        }}
+                        secondary={true}
+                        style={{
+                            minWidth: "50px",
+                            height: "26px",
+                            lineHeight: "26px"
+                        }}
+                        onClick={ () => this.handleRemove(index) }
+                        />
+                }
+            </div>
+        )
 
         return (
             <div>
-                <Paper className="SingleItemEdit" zDepth={2}>
-                
-                    <div className="image-edit-field">
-                        <TextField
-                            hintText="http://website.com/image.jpg"
-                            floatingLabelText="Image URL"
-                            defaultValue={newSingleItemData.image}
-                            floatingLabelFixed={true}
-                            name="image"
-                            onChange={(e) => this.handleTextInput(e)}
-                            />
-                        <div className="detailV__recipe__image">
-                            <img src={newSingleItemData.image} alt={newSingleItemData.name} />
+                <form onSubmit={(e) => handleSubmit(e, newSingleData)}>
+                    <Paper className="SingleItemEdit" zDepth={2}>
+                    
+                        <div className="image-edit-field">
+                            <TextField
+                                hintText="http://website.com/image.jpg"
+                                floatingLabelText="Image URL (Optional)"
+                                value={newSingleData.image}
+                                fullWidth={true}
+                                floatingLabelFixed={true}
+                                name="image"
+                                onChange={(e) => this.handleInputChange(e)}
+                                />
+                            <div className="detailV__recipe__image">
+                                <img 
+                                    src={newSingleData.image} 
+                                    alt={ newSingleData.name === '' ? "" : 'Image of ' + newSingleData.name} />
+                            </div>
                         </div>
-                    </div>
-                    <div className="detailV__recipe__info">
-                        <TextField
-                            hintText="Name of your recipe"
-                            floatingLabelText="Recipe's Name"
-                            name="name"
-                            onChange={(e) => this.handleTextInput(e)}
-                            defaultValue={newSingleItemData.name}
-                            floatingLabelFixed={true}
-                            type="text"
-                            fullWidth={true}
-                            style={{display: "block"}}
-                            />
-                        <TextField
-                            hintText="Please give some description"
-                            floatingLabelText="Description (optional)"
-                            defaultValue={newSingleItemData.description}
-                            floatingLabelFixed={true}
-                            name="description"
-                            onChange={(e) => this.handleTextInput(e)}
-                            fullWidth={true}
-                            multiLine={true}
-                            rows={1}
-                            rowsMax={4}
-                            style={{display: "block"}}
-                            />
+                        <div className="detailV__recipe__info">
+                            <TextField
+                                hintText="Name of your recipe"
+                                floatingLabelText="Recipe's Name"
+                                errorText= {nameIsEmpty ? "Name of recipe is required" : ""}
+                                name="name"
+                                onChange={(e) => this.handleInputChange(e)}
+                                value={newSingleData.name}
+                                floatingLabelFixed={true}
+                                type="text"
+                                fullWidth={true}
+                                style={{display: "block"}}
+                                />
+                            <TextField
+                                hintText="Please give some description"
+                                floatingLabelText="Description (optional)"
+                                value={newSingleData.description}
+                                floatingLabelFixed={true}
+                                name="description"
+                                onChange={(e) => this.handleInputChange(e)}
+                                fullWidth={true}
+                                multiLine={true}
+                                rows={1}
+                                rowsMax={4}
+                                style={{display: "block"}}
+                                />
 
-                        <h2 className="detailV__recipe__ingrs-heading">Ingredients:</h2>                           
-                        
-                        {
-                            newSingleItemData.ingredients.map( (ingredient, index) =>
-                                <div className="form-item" key={ingredient.id}>
-                                    <TextField
-                                        className="text-field"
-                                        hintText="Ingrdient"
-                                        defaultValue={ingredient.name}
-                                        floatingLabelFixed={true}
-                                        type="text"
-                                        errorText= {ingrNeededErr ? "At least one ingrdient needed" : ""}
-                                        onChange={ (e) => this.handleEditIngredientField(e, index) }
-                                        />
+                            <h2 className="detailV__recipe__ingrs-heading">Ingredients:</h2>                           
+                            
+                            {ingredientsList}
 
-                                    { !onlyOneIngredientLeft &&
-                                        <FlatButton 
-                                            label="Remove" 
-                                            labelStyle={{
-                                                fontSize: "10px",
-                                                paddingLeft: "2px",
-                                                paddingRight: "2px",
-                                            }}
-                                            secondary={true}
-                                            style={{
-                                                minWidth: "50px",
-                                                height: "26px",
-                                                lineHeight: "26px"
-                                            }}
-                                            onClick={ () => this.handleRemoveIngrBtn(index) }
-                                            />
-                                    }
-                                    
-                                </div>
-                            )
-
-                        }
-                        <br/>
-                        <FlatButton 
-                            label="Add ingredient" 
-                            labelStyle={{
-                                fontSize: "10px",
-                                paddingLeft: "5px",
-                                paddingRight: "5px",
-                            }}
-                            primary={true}
-                            style={{
-                                minWidth: "50px",
-                                height: "26px",
-                                lineHeight: "26px"
-                            }} 
-                            />    
-                        
-                        {/* Buttons */}
-                        <div className="detailV__recipe__ctrls">
+                            <br/>
                             <FlatButton 
-                                label="SAVE" 
-                                primary={true} />
-                            <FlatButton 
-                                label="CANCEL" 
-                                primary={true} />
-                            <FlatButton 
-                                label="DELETE THIS RECIPE" 
-                                secondary={true} />
-                        </div>      
+                                label="Add ingredient" 
+                                primary={true}
+                                onClick={this.handleAdd}
+                                labelStyle={{
+                                    fontSize: "10px",
+                                    paddingLeft: "5px",
+                                    paddingRight: "5px",
+                                }}
+                                style={{
+                                    minWidth: "50px",
+                                    height: "26px",
+                                    lineHeight: "26px"
+                                }} 
+                                />    
+                            
+                            {/* Buttons */}
+                            <div className="detailV__recipe__ctrls">
+                                <FlatButton 
+                                    label="SAVE"
+                                    type="submit"
+                                    disabled={!noError}
+                                    primary={true} 
+                                    />
+                                <FlatButton 
+                                    label="CANCEL"
+                                    onClick={this.handleCancel}
+                                    primary={true} 
+                                    />
+                                { (newSingleData.id !== undefined) &&
+                                <FlatButton 
+                                    label="DELETE THIS RECIPE" 
+                                    onClick={() => this.props.handleDelete(newSingleData.id)}
+                                    secondary={true} 
 
-                    </div>
-                </Paper>
+                                    />
+                                }
+                            </div>      
+
+                        </div>
+                    </Paper>
+                </form>
             </div>
         );
         
         
     }
 }
+
 
 export default SingleItemEdit;

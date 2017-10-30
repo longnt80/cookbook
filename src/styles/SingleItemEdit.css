@@ -44,9 +44,9 @@
 
 .SingleItemEdit .detailV__recipe__ctrls {
     position: absolute;
-    width: 100%;
-    /* right: 20px; */
+    right: 20px;
     bottom: 10px;
+    text-align: right;
 }
 
 .form-item {
