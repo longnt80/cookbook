@@ -160,7 +160,7 @@ class SingleItemEdit extends Component {
                     name="ingredient"
                     floatingLabelFixed={true}
                     type="text"
-                    errorText= {noIngredient ? "At least one ingredient is needed" : ""}
+                    errorText={noIngredient ? "At least one ingredient is needed" : ""}
                     onChange={ (e) => this.handleInputChange(e, index) }
                     />
 
@@ -209,7 +209,7 @@ class SingleItemEdit extends Component {
                             <TextField
                                 hintText="Name of your recipe"
                                 floatingLabelText="Recipe's Name"
-                                errorText= {nameIsEmpty ? "Name of recipe is required" : ""}
+                                errorText={nameIsEmpty ? "Name of recipe is required" : ""}
                                 name="name"
                                 onChange={(e) => this.handleInputChange(e)}
                                 value={newSingleData.name}

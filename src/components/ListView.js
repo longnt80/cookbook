@@ -23,7 +23,7 @@ const ListView = (props) => {
                 key={recipe.id}>
                 
                 <Paper 
-                    style= {bgStyle}
+                    style={bgStyle}
                     className="grid__content"
                     zDepth={1}
                     onClick={() => handleViewOneBtn(recipe)}
