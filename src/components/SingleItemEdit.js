@@ -29,13 +29,13 @@ class SingleItemEdit extends Component {
     removeEmptyIngrFields = (ingr) => {
         return ingr.name !== '';
     }
-    
+
     componentWillMount() {
-        const {singleItemData} = this.props;
-        
+        const { singleItemData } = this.props;
+
         if (singleItemData !== null) {
             const allIngrFieldsAreEmpty = singleItemData.ingredients.filter( this.removeEmptyIngrFields ).length === 0 ? true : false
-            
+
             this.setState({
                 newSingleData: {
                     ...singleItemData,
@@ -51,7 +51,7 @@ class SingleItemEdit extends Component {
                     ingredients: defaultContent.ingredients.map(obj => {
                         return {...obj}
                     })
-                } 
+                }
             });
         }
     }
@@ -64,8 +64,8 @@ class SingleItemEdit extends Component {
             });
         }
     }
-    
-    
+
+
 
     handleInputChange = (e, index) => {
         const target = e.target;
@@ -94,7 +94,7 @@ class SingleItemEdit extends Component {
         const newArr = this.state.newSingleData.ingredients.slice(0);
         newArr.splice(index, 1);
         const allIngrFieldsAreEmpty = newArr.filter( this.removeEmptyIngrFields ).length === 0 ? true : false;
-        
+
         this.setState({
             newSingleData: {
                 ...this.state.newSingleData,
@@ -106,7 +106,7 @@ class SingleItemEdit extends Component {
 
     handleAdd = () => {
         const newArr = [...this.state.newSingleData.ingredients];
-        
+
         const generateNewId = (arr) => {
             const idsArr = arr.map( item => item.id );
             const sortedArr = idsArr.sort((a,b) => a-b)
@@ -134,22 +134,22 @@ class SingleItemEdit extends Component {
     }
 
     handleCancel = () => {
-        const {singleItemData,handleViewOneBtn, handleViewAllBtn} = this.props;
+        const { singleItemData,handleViewOneBtn, handleViewAllBtn } = this.props;
 
-        singleItemData === null ? 
+        singleItemData === null ?
         handleViewAllBtn() :
-        handleViewOneBtn(singleItemData) 
+        handleViewOneBtn(singleItemData)
     }
 
-    
-    
+
+
     render() {
-        const {handleSubmit} = this.props;
-        const {newSingleData, noIngredientError} = this.state;
-        const onlyOneIngredientLeft = newSingleData.ingredients.length === 1;
+        const { handleSubmit } = this.props;
+        const { newSingleData, noIngredientError } = this.state;
+        const moreThanOneIngredient = newSingleData.ingredients.length > 1;
         const nameIsEmpty = newSingleData.name.length < 1;
         const noIngredient = noIngredientError;
-        const noError = !noIngredient && !nameIsEmpty
+        const isError = noIngredient || nameIsEmpty
 
         const ingredientsList = newSingleData.ingredients.map( (ingredient, index) =>
             <div className="form-item" key={ingredient.id}>
@@ -164,9 +164,9 @@ class SingleItemEdit extends Component {
                     onChange={ (e) => this.handleInputChange(e, index) }
                     />
 
-                { !onlyOneIngredientLeft &&
-                    <FlatButton 
-                        label="Remove" 
+                { moreThanOneIngredient &&
+                    <FlatButton
+                        label="Remove"
                         labelStyle={{
                             fontSize: "10px",
                             paddingLeft: "2px",
@@ -188,7 +188,7 @@ class SingleItemEdit extends Component {
             <div>
                 <form onSubmit={(e) => handleSubmit(e, newSingleData)}>
                     <Paper className="SingleItemEdit" zDepth={2}>
-                    
+
                         <div className="image-edit-field">
                             <TextField
                                 hintText="http://website.com/image.jpg"
@@ -200,8 +200,8 @@ class SingleItemEdit extends Component {
                                 onChange={(e) => this.handleInputChange(e)}
                                 />
                             <div className="detailV__recipe__image">
-                                <img 
-                                    src={newSingleData.image} 
+                                <img
+                                    src={newSingleData.image}
                                     alt={ newSingleData.name === '' ? "" : 'Image of ' + newSingleData.name} />
                             </div>
                         </div>
@@ -232,13 +232,13 @@ class SingleItemEdit extends Component {
                                 style={{display: "block"}}
                                 />
 
-                            <h2 className="detailV__recipe__ingrs-heading">Ingredients:</h2>                           
-                            
+                            <h2 className="detailV__recipe__ingrs-heading">Ingredients:</h2>
+
                             {ingredientsList}
 
                             <br/>
-                            <FlatButton 
-                                label="Add ingredient" 
+                            <FlatButton
+                                label="Add ingredient"
                                 primary={true}
                                 onClick={this.handleAdd}
                                 labelStyle={{
@@ -250,39 +250,39 @@ class SingleItemEdit extends Component {
                                     minWidth: "50px",
                                     height: "26px",
                                     lineHeight: "26px"
-                                }} 
-                                />    
-                            
+                                }}
+                                />
+
                             {/* Buttons */}
                             <div className="detailV__recipe__ctrls">
-                                <FlatButton 
+                                <FlatButton
                                     label="SAVE"
                                     type="submit"
-                                    disabled={!noError}
-                                    primary={true} 
+                                    disabled={isError}
+                                    primary={true}
                                     />
-                                <FlatButton 
+                                <FlatButton
                                     label="CANCEL"
                                     onClick={this.handleCancel}
-                                    primary={true} 
+                                    primary={true}
                                     />
                                 { (newSingleData.id !== undefined) &&
-                                <FlatButton 
-                                    label="DELETE THIS RECIPE" 
+                                <FlatButton
+                                    label="DELETE THIS RECIPE"
                                     onClick={() => this.props.handleDelete(newSingleData.id)}
-                                    secondary={true} 
+                                    secondary={true}
 
                                     />
                                 }
-                            </div>      
+                            </div>
 
                         </div>
                     </Paper>
                 </form>
             </div>
         );
-        
-        
+
+
     }
 }
 

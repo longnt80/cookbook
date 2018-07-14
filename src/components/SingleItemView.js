@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 
 const SingleItemView = (props) => {
-    const {singleItemData, handleViewAllBtn, handleEditOrCreate} = props;
+    const { singleItemData, handleViewAllBtn, handleEditOrCreate } = props;
     const ingredientsList = singleItemData.ingredients.map( ingredient => <li key={ingredient.id}>{ingredient.name}</li> )
 
     const noImgStyle = (singleItemData.image === '') ? { maxWidth: "600px", margin: "0 auto" } : null
@@ -19,26 +19,26 @@ const SingleItemView = (props) => {
                         <img src={singleItemData.image} alt={singleItemData.name} />
                     </div>
                 }
-                
+
                 <div className="detailV__recipe__info">
                     <h1 className="detailV__recipe__name">{singleItemData.name}</h1>
                     <h2 className="detailV__recipe__desc">{singleItemData.description}</h2>
                     <ul className="detailV__recipe__ingrs">
                         {ingredientsList}
                     </ul>
-                    
+
                     <div className="detailV__recipe__ctrls">
-                        <FlatButton 
+                        <FlatButton
+                            label="EDIT"
                             onClick={(e) => handleEditOrCreate(e, singleItemData)}
-                            label="EDIT" 
-                            primary={true} 
+                            primary={true}
                             />
-                        <FlatButton 
+                        <FlatButton
                             label="DELETE THIS RECIPE"
-                            secondary={true} 
                             onClick={() => props.handleDelete(singleItemData.id)}
+                            secondary={true}
                             />
-                    </div>      
+                    </div>
 
                 </div>
             </Paper>

@@ -5,6 +5,8 @@ import ListView from './ListView';
 import SingleItem from './SingleItem';
 import demoData from '../demo';
 
+import { generateNewId } from '../utils/functions';
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -15,10 +17,10 @@ class App extends Component {
             edittingItem: false
         }
     }
-    
+
     componentWillMount() {
         const data = JSON.parse( localStorage.getItem("recipe") );
-        
+
         this.setState({
             data: data ? [...data] : [...demoData]
         });
@@ -38,7 +40,7 @@ class App extends Component {
             edittingItem: false
         });
     }
-    
+
     handleEditOrCreate = (e, singleItemData) => {
         e.preventDefault();
         if (singleItemData) {
@@ -58,7 +60,6 @@ class App extends Component {
     }
 
     handleDelete = (recipeId) => {
-        console.log("Delete!!!!!!!!!!!!!")
         const newData = this.state.data.filter( item => item.id !== recipeId )
 
         localStorage.setItem('recipe', JSON.stringify(newData) );
@@ -73,7 +74,7 @@ class App extends Component {
     handleSubmit = (e, newSingleData) => {
         e.preventDefault();
 
-        if (newSingleData.id) {
+        if (typeof newSingleData.id !== "undefined") {
             const newData = this.state.data.map(item => {
                 return item.id === newSingleData.id ? newSingleData : item;
             })
@@ -84,48 +85,32 @@ class App extends Component {
             this.handleViewOneBtn(newSingleData)
         }
         else {
-            const generateNewId = (arr) => {
-                const idsArr = arr.map( item => item.id );
-                const sortedArr = idsArr.sort((a,b) => a-b)
-                if ( sortedArr[0] !== 0 ) {
-                    return 0;
-                }
-                else {
-                    for (let i = 0; i < sortedArr.length; i++) {
-                        if (sortedArr[i+1] - sortedArr[i] > 1) {
-                            return sortedArr[i]+1;
-                        }
-                    }
-                    return sortedArr[sortedArr.length-1]+1;
-                }
-            }
-            
             const newId = generateNewId(this.state.data);
             newSingleData.id = newId;
             const newData = this.state.data.concat([newSingleData])
             localStorage.setItem('recipe', JSON.stringify(newData) );
-            this.setState({ 
+            this.setState({
                 data: [...newData]
-             });
-             this.handleViewAllBtn();
+            });
+            this.handleViewAllBtn();
         }
-        
+
     }
 
-    
+
 
     render() {
         const {view, data, singleItemData, edittingItem} = this.state;
-        
-        const theListView = view === "list" ? 
-                <ListView 
-                    data={data} 
+
+        const theListView = view === "list" ?
+                <ListView
+                    data={data}
                     handleDelete={this.handleDelete}
                     handleViewOneBtn={this.handleViewOneBtn}
                     handleEditOrCreate={this.handleEditOrCreate} />
                 : null;
-        const theSingleView = view === "detail" ? 
-                <SingleItem 
+        const theSingleView = view === "detail" ?
+                <SingleItem
                     edittingItem={edittingItem}
                     singleItemData={singleItemData}
                     handleDelete={this.handleDelete}
@@ -135,7 +120,7 @@ class App extends Component {
                     handleEditOrCreate={this.handleEditOrCreate} />
                 : null;
 
-        
+
         if (data !== null) {
             return (
                 <div className="container">
@@ -143,8 +128,8 @@ class App extends Component {
                     {theListView}
                     {theSingleView}
                 </div>
-            )   
-            
+            )
+
         }
         else {
             return "Loading recipes..."
