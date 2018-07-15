@@ -7,23 +7,16 @@ import demoData from '../demo';
 
 import { generateNewId } from '../utils/functions';
 
+const data = JSON.parse( localStorage.getItem("recipe") );
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
             view: "list", // "list" or "detail"
-            data: null, // data for all recipes
+            data: data ? [...data] : [...demoData], // data for all recipes
             singleItemData: null, //data for one recipe
             edittingItem: false
         }
-    }
-
-    componentWillMount() {
-        const data = JSON.parse( localStorage.getItem("recipe") );
-
-        this.setState({
-            data: data ? [...data] : [...demoData]
-        });
     }
 
     handleViewOneBtn = (recipe) => {
@@ -74,6 +67,9 @@ class App extends Component {
     handleSubmit = (e, newSingleData) => {
         e.preventDefault();
 
+        // Remove empty ingredients
+        newSingleData.ingredients = [...newSingleData.ingredients].filter( ingre => ingre.name !== "");
+
         if (typeof newSingleData.id !== "undefined") {
             const newData = this.state.data.map(item => {
                 return item.id === newSingleData.id ? newSingleData : item;
@@ -100,7 +96,7 @@ class App extends Component {
 
 
     render() {
-        const {view, data, singleItemData, edittingItem} = this.state;
+        const { view, data, singleItemData, edittingItem } = this.state;
 
         const theListView = view === "list" ?
                 <ListView

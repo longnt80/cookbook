@@ -21,39 +21,13 @@ class SingleItemEdit extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            newSingleData: null,
-            noIngredientError: true
+            newSingleData: this.props.singleItemData === null ? {...defaultContent} : {...this.props.singleItemData},
+            noIngredientError: this.props.singleItemData.ingredients.filter( this.removeEmptyIngrFields ).length === 0 ? true : false
         }
     }
 
     removeEmptyIngrFields = (ingr) => {
         return ingr.name !== '';
-    }
-
-    componentWillMount() {
-        const { singleItemData } = this.props;
-
-        if (singleItemData !== null) {
-            const allIngrFieldsAreEmpty = singleItemData.ingredients.filter( this.removeEmptyIngrFields ).length === 0 ? true : false
-
-            this.setState({
-                newSingleData: {
-                    ...singleItemData,
-                    ingredients: [...singleItemData.ingredients],
-                },
-                noIngredientError: allIngrFieldsAreEmpty
-            });
-        }
-        else {
-            this.setState({
-                newSingleData: {
-                    ...defaultContent,
-                    ingredients: defaultContent.ingredients.map(obj => {
-                        return {...obj}
-                    })
-                }
-            });
-        }
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -134,7 +108,7 @@ class SingleItemEdit extends Component {
     }
 
     handleCancel = () => {
-        const { singleItemData,handleViewOneBtn, handleViewAllBtn } = this.props;
+        const {singleItemData,handleViewOneBtn, handleViewAllBtn} = this.props;
 
         singleItemData === null ?
         handleViewAllBtn() :
@@ -144,12 +118,12 @@ class SingleItemEdit extends Component {
 
 
     render() {
-        const { handleSubmit } = this.props;
-        const { newSingleData, noIngredientError } = this.state;
-        const moreThanOneIngredient = newSingleData.ingredients.length > 1;
+        const {handleSubmit} = this.props;
+        const {newSingleData, noIngredientError} = this.state;
+        const onlyOneIngredientLeft = newSingleData.ingredients.length === 1;
         const nameIsEmpty = newSingleData.name.length < 1;
         const noIngredient = noIngredientError;
-        const isError = noIngredient || nameIsEmpty
+        const noError = !noIngredient && !nameIsEmpty
 
         const ingredientsList = newSingleData.ingredients.map( (ingredient, index) =>
             <div className="form-item" key={ingredient.id}>
@@ -164,7 +138,7 @@ class SingleItemEdit extends Component {
                     onChange={ (e) => this.handleInputChange(e, index) }
                     />
 
-                { moreThanOneIngredient &&
+                { !onlyOneIngredientLeft &&
                     <FlatButton
                         label="Remove"
                         labelStyle={{
@@ -258,7 +232,7 @@ class SingleItemEdit extends Component {
                                 <FlatButton
                                     label="SAVE"
                                     type="submit"
-                                    disabled={isError}
+                                    disabled={!noError}
                                     primary={true}
                                     />
                                 <FlatButton
